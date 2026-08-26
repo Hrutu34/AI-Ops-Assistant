@@ -68,13 +68,17 @@ Engineers lose time context-switching between dashboards, log aggregators, and m
 ## Running Locally
 
 ```bash
-# Backend
+# Backend and dashboard
 cd backend
-cp .env.example .env   
-mvn spring-boot:run
+bash ./app.sh start
 
-# Dashboard
-# Open http://localhost:8080 after starting the backend
+# Check or stop it later
+bash ./app.sh status
+bash ./app.sh stop
+
+Open http://localhost:8080 after starting the backend.
+
+The script requires Bash and Maven, so on Windows use Git Bash or WSL.
 ```
 
 Requires: Java 17+, Node 18+, a Postgres instance (local Docker or Neon), an OpenAI (or Groq) API key.
