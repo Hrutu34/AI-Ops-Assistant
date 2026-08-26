@@ -24,4 +24,11 @@ class AiOpsAssistantApplicationTests {
                 .andExpect(jsonPath("$.status").value("ok"))
                 .andExpect(jsonPath("$.timestamp").exists());
     }
+
+    @Test
+    void dashboardIsServedAtApplicationRoot() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.anything()));
+    }
 }
