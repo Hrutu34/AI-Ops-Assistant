@@ -17,9 +17,9 @@ Engineers lose time context-switching between dashboards, log aggregators, and m
 
 ```
 ┌─────────────┐      ┌──────────────────────┐      ┌─────────────┐
-│   React     │ HTTP │   Spring Boot API     │      │  PostgreSQL │
-│   Frontend  │◄────►│  ─────────────────    │◄────►│  (metrics,  │
-│  (Vercel)   │      │  Auth · REST · Agent  │      │   users)    │
+│  Dashboard  │ HTTP │   Spring Boot API     │      │  PostgreSQL  │
+│ (static UI) │◄────►│  ─────────────────    │◄────►│  (metrics,  │
+│             │      │  Auth · REST · Agent  │      │   users)    │
 └─────────────┘      │  Orchestration Layer  │      └─────────────┘
                       │                       │
                       │  ┌─────────────────┐  │      ┌─────────────┐
@@ -45,7 +45,7 @@ Engineers lose time context-switching between dashboards, log aggregators, and m
 | Agent orchestration | OpenAI function calling (or MCP server) | Structured, auditable tool invocation instead of free-form prompting |
 | Database | PostgreSQL (Neon) | Stores synthetic metrics + user/tenant data |
 | Cache | Redis (Upstash) | Caches repeated metric queries, cuts LLM/DB round-trips |
-| Frontend | React (Vite), Recharts | Chat UI + live metric charts |
+| Dashboard | Spring Boot static resources | Lightweight operational view |
 | Observability | Spring Boot Actuator | Exposes health/metrics endpoints for the app itself |
 | Hosting | Render (backend), Vercel (frontend), Neon (DB), Upstash (Redis) | Free tiers, GitHub auto-deploy |
 | CI | GitHub Actions | Runs `mvn test` on every push |
@@ -73,10 +73,8 @@ cd backend
 cp .env.example .env   
 mvn spring-boot:run
 
-# Frontend
-cd frontend
-npm install
-npm run dev
+# Dashboard
+# Open http://localhost:8080 after starting the backend
 ```
 
 Requires: Java 17+, Node 18+, a Postgres instance (local Docker or Neon), an OpenAI (or Groq) API key.
