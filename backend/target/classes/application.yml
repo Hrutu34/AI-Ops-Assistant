@@ -14,6 +14,9 @@ telemetry:
     enabled: ${MARKET_ENABLED:false}
     api-key: ${ALPHA_VANTAGE_API_KEY:demo}
     symbol: ${MARKET_SYMBOL:SPY}
+  stream:
+    interval-ms: ${TELEMETRY_STREAM_INTERVAL_MS:60000}
+    initial-delay-ms: ${TELEMETRY_STREAM_INITIAL_DELAY_MS:60000}
 
 management:
   endpoints:

@@ -8,8 +8,11 @@ const footerState = document.querySelector('#footer-state');
 const telemetryValue = document.querySelector('#telemetry-value');
 const telemetryNote = document.querySelector('#telemetry-note');
 const signalList = document.querySelector('#signal-list');
+const telemetryConnection = document.querySelector('#telemetry-connection');
 const healthRefreshIntervalMs = 30_000;
 const telemetryRefreshIntervalMs = 60_000;
+let telemetryStream;
+let telemetryPolling;
 
 function setConnectionState(healthy, timestamp) {
     const signalTime = timestamp ? new Date(timestamp) : new Date();
@@ -47,17 +50,46 @@ async function loadTelemetry() {
         const response = await fetch('/api/v1/signals', { headers: { Accept: 'application/json' } });
         if (!response.ok) throw new Error(`Signals request returned ${response.status}`);
         const signals = await response.json();
-        const categories = [...new Set(signals.map(signal => signal.category))];
-        telemetryValue.textContent = `${signals.length} signals`;
-        telemetryNote.textContent = categories.length
-            ? categories.join(' · ')
-            : 'No signals available';
-        renderSignals(signals);
+        renderTelemetry(signals);
     } catch (error) {
         telemetryValue.textContent = 'Unavailable';
         telemetryNote.textContent = 'Signal provider could not be reached';
         signalList.replaceChildren(createFeedMessage('Signal provider could not be reached'));
     }
+}
+
+function renderTelemetry(signals) {
+    const categories = [...new Set(signals.map(signal => signal.category))];
+    telemetryValue.textContent = `${signals.length} signals`;
+    telemetryNote.textContent = categories.length
+        ? categories.join(' · ')
+        : 'No signals available';
+    renderSignals(signals);
+}
+
+function connectTelemetryStream() {
+    if (!window.EventSource) {
+        telemetryConnection.innerHTML = '<span class="dot"></span>Polling every 60s';
+        telemetryPolling = setInterval(loadTelemetry, telemetryRefreshIntervalMs);
+        return;
+    }
+
+    telemetryStream = new EventSource('/api/v1/signals/stream');
+    telemetryStream.addEventListener('signals', event => {
+        renderTelemetry(JSON.parse(event.data));
+        telemetryConnection.innerHTML = '<span class="dot"></span>Live stream';
+        if (telemetryPolling) {
+            clearInterval(telemetryPolling);
+            telemetryPolling = undefined;
+        }
+    });
+    telemetryStream.onerror = () => {
+        telemetryConnection.innerHTML = '<span class="dot"></span>Polling fallback';
+        if (!telemetryPolling) {
+            loadTelemetry();
+            telemetryPolling = setInterval(loadTelemetry, telemetryRefreshIntervalMs);
+        }
+    };
 }
 
 function createFeedMessage(message) {
@@ -124,6 +156,5 @@ async function refreshDashboard() {
 
 refreshButton.addEventListener('click', refreshDashboard);
 checkHealth();
-loadTelemetry();
+connectTelemetryStream();
 setInterval(checkHealth, healthRefreshIntervalMs);
-setInterval(loadTelemetry, telemetryRefreshIntervalMs);

@@ -90,6 +90,8 @@ export GDELT_MAX_RECORDS=10
 
 The provider is available through `GET /api/v1/signals`. If GDELT is unavailable or returns malformed data, the application keeps serving the mock signals.
 
+The dashboard also subscribes to `GET /api/v1/signals/stream` using Server-Sent Events. It receives an initial snapshot and refreshed signals every 60 seconds. Configure the interval with `TELEMETRY_STREAM_INTERVAL_MS`; the browser falls back to polling if streaming is unavailable.
+
 ### Live market data
 
 To add a market signal for a watchlist symbol, create an Alpha Vantage API key and enable the provider:

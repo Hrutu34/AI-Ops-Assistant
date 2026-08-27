@@ -1,30 +1,35 @@
 package com.aiops.assistant.api;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.aiops.assistant.telemetry.Signal;
-import com.aiops.assistant.telemetry.TelemetryProvider;
+import com.aiops.assistant.telemetry.SignalAggregator;
+import com.aiops.assistant.telemetry.SignalStreamService;
 
 @RestController
 @RequestMapping("/api/v1/signals")
 public class SignalsController {
 
-    private final List<TelemetryProvider> telemetryProviders;
+    private final SignalAggregator signalAggregator;
+    private final SignalStreamService signalStreamService;
 
-    public SignalsController(List<TelemetryProvider> telemetryProviders) {
-        this.telemetryProviders = telemetryProviders;
+    public SignalsController(SignalAggregator signalAggregator, SignalStreamService signalStreamService) {
+        this.signalAggregator = signalAggregator;
+        this.signalStreamService = signalStreamService;
     }
 
     @GetMapping
     public List<Signal> signals() {
-        return telemetryProviders.stream()
-                .flatMap(provider -> provider.getSignals().stream())
-                .sorted((left, right) -> right.observedAt().compareTo(left.observedAt()))
-                .collect(Collectors.toList());
+        return signalAggregator.getSignals();
+    }
+
+    @GetMapping(value = "/stream", produces = "text/event-stream")
+    public SseEmitter stream() {
+        return signalStreamService.subscribe();
     }
 }

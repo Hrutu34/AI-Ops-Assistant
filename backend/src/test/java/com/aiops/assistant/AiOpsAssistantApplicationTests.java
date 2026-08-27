@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -44,5 +45,11 @@ class AiOpsAssistantApplicationTests {
                 .andExpect(jsonPath("$[0].category").value("SYSTEM"))
                 .andExpect(jsonPath("$[0].title").exists())
                 .andExpect(jsonPath("$[0].observedAt").exists());
+    }
+
+    @Test
+    void signalsStreamStartsAsyncResponse() throws Exception {
+        mockMvc.perform(get("/api/v1/signals/stream"))
+                .andExpect(request().asyncStarted());
     }
 }
