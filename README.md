@@ -90,6 +90,18 @@ export GDELT_MAX_RECORDS=10
 
 The provider is available through `GET /api/v1/signals`. If GDELT is unavailable or returns malformed data, the application keeps serving the mock signals.
 
+### Live market data
+
+To add a market signal for a watchlist symbol, create an Alpha Vantage API key and enable the provider:
+
+```powershell
+$env:MARKET_ENABLED = "true"
+$env:ALPHA_VANTAGE_API_KEY = "your-api-key"
+$env:MARKET_SYMBOL = "SPY"
+```
+
+The free Alpha Vantage tier is rate-limited, so this provider is intentionally opt-in and currently requests one symbol per dashboard refresh.
+
 The script requires Bash and Maven, so on Windows use Git Bash or WSL.
 ```
 
