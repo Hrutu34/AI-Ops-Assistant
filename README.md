@@ -78,6 +78,18 @@ bash ./app.sh stop
 
 Open http://localhost:8080 after starting the backend.
 
+### Live GDELT news
+
+The dashboard uses mock signals by default. To add live GDELT news signals, enable the provider before starting the backend:
+
+```bash
+export GDELT_ENABLED=true
+export GDELT_QUERY="conflict OR war OR crisis"
+export GDELT_MAX_RECORDS=10
+```
+
+The provider is available through `GET /api/v1/signals`. If GDELT is unavailable or returns malformed data, the application keeps serving the mock signals.
+
 The script requires Bash and Maven, so on Windows use Git Bash or WSL.
 ```
 

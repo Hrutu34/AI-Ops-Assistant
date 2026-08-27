@@ -5,6 +5,12 @@ spring:
 server:
   port: ${PORT:8080}
 
+telemetry:
+  gdelt:
+    enabled: ${GDELT_ENABLED:false}
+    query: ${GDELT_QUERY:conflict OR war OR crisis}
+    max-records: ${GDELT_MAX_RECORDS:10}
+
 management:
   endpoints:
     web:
