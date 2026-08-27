@@ -8,6 +8,8 @@ const footerState = document.querySelector('#footer-state');
 const telemetryValue = document.querySelector('#telemetry-value');
 const telemetryNote = document.querySelector('#telemetry-note');
 const signalList = document.querySelector('#signal-list');
+const healthRefreshIntervalMs = 30_000;
+const telemetryRefreshIntervalMs = 60_000;
 
 function setConnectionState(healthy, timestamp) {
     const signalTime = timestamp ? new Date(timestamp) : new Date();
@@ -123,3 +125,5 @@ async function refreshDashboard() {
 refreshButton.addEventListener('click', refreshDashboard);
 checkHealth();
 loadTelemetry();
+setInterval(checkHealth, healthRefreshIntervalMs);
+setInterval(loadTelemetry, telemetryRefreshIntervalMs);
