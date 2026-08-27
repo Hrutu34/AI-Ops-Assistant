@@ -5,6 +5,8 @@ const statusNote = document.querySelector('#status-note');
 const lastSignal = document.querySelector('#last-signal');
 const endpointStatus = document.querySelector('#endpoint-status');
 const footerState = document.querySelector('#footer-state');
+const telemetryValue = document.querySelector('#telemetry-value');
+const telemetryNote = document.querySelector('#telemetry-note');
 
 function setConnectionState(healthy, timestamp) {
     const signalTime = timestamp ? new Date(timestamp) : new Date();
@@ -37,5 +39,22 @@ async function checkHealth() {
     }
 }
 
+async function loadTelemetry() {
+    try {
+        const response = await fetch('/api/v1/signals', { headers: { Accept: 'application/json' } });
+        if (!response.ok) throw new Error(`Signals request returned ${response.status}`);
+        const signals = await response.json();
+        const categories = [...new Set(signals.map(signal => signal.category))];
+        telemetryValue.textContent = `${signals.length} signals`;
+        telemetryNote.textContent = categories.length
+            ? categories.join(' · ')
+            : 'No signals available';
+    } catch (error) {
+        telemetryValue.textContent = 'Unavailable';
+        telemetryNote.textContent = 'Signal provider could not be reached';
+    }
+}
+
 refreshButton.addEventListener('click', checkHealth);
 checkHealth();
+loadTelemetry();
