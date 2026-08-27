@@ -7,6 +7,7 @@ const endpointStatus = document.querySelector('#endpoint-status');
 const footerState = document.querySelector('#footer-state');
 const telemetryValue = document.querySelector('#telemetry-value');
 const telemetryNote = document.querySelector('#telemetry-note');
+const signalList = document.querySelector('#signal-list');
 
 function setConnectionState(healthy, timestamp) {
     const signalTime = timestamp ? new Date(timestamp) : new Date();
@@ -49,12 +50,76 @@ async function loadTelemetry() {
         telemetryNote.textContent = categories.length
             ? categories.join(' · ')
             : 'No signals available';
+        renderSignals(signals);
     } catch (error) {
         telemetryValue.textContent = 'Unavailable';
         telemetryNote.textContent = 'Signal provider could not be reached';
+        signalList.replaceChildren(createFeedMessage('Signal provider could not be reached'));
     }
 }
 
-refreshButton.addEventListener('click', checkHealth);
+function createFeedMessage(message) {
+    const element = document.createElement('p');
+    element.className = 'panel-footnote';
+    element.textContent = message;
+    return element;
+}
+
+function renderSignals(signals) {
+    signalList.replaceChildren();
+    if (!signals.length) {
+        signalList.append(createFeedMessage('No signals available'));
+        return;
+    }
+
+    signals.slice(0, 8).forEach(signal => {
+        const item = document.createElement('article');
+        item.className = 'signal-item';
+
+        const meta = document.createElement('div');
+        meta.className = 'signal-meta';
+        const category = document.createElement('span');
+        category.className = 'signal-category';
+        category.textContent = signal.category;
+        const severity = document.createElement('span');
+        severity.className = `signal-severity severity-${signal.severity.toLowerCase()}`;
+        severity.textContent = signal.severity;
+        meta.append(category, severity);
+
+        const title = document.createElement('p');
+        title.className = 'signal-title';
+        title.textContent = signal.title;
+
+        const details = document.createElement('div');
+        details.className = 'signal-details';
+        const source = document.createElement('span');
+        source.textContent = signal.source;
+        const observedAt = document.createElement('time');
+        observedAt.dateTime = signal.observedAt;
+        observedAt.textContent = new Date(signal.observedAt).toLocaleString([], {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        });
+        details.append(source, observedAt);
+
+        item.append(meta, title, details);
+        if (signal.sourceUrl) {
+            const link = document.createElement('a');
+            link.className = 'signal-link';
+            link.href = signal.sourceUrl;
+            link.target = '_blank';
+            link.rel = 'noreferrer';
+            link.textContent = 'Open source';
+            item.append(link);
+        }
+        signalList.append(item);
+    });
+}
+
+async function refreshDashboard() {
+    await Promise.all([checkHealth(), loadTelemetry()]);
+}
+
+refreshButton.addEventListener('click', refreshDashboard);
 checkHealth();
 loadTelemetry();

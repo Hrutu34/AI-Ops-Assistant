@@ -76,6 +76,19 @@ code { color: var(--ink); font: 13px var(--mono); }
 .next-panel h2 { max-width: 260px; font-size: 31px; line-height: 1.02; }
 .next-panel p:not(.eyebrow) { max-width: 310px; margin-top: 18px; color: #675326; font-size: 14px; line-height: 1.5; }
 .coming-soon { display: inline-block; margin-top: 18px; padding: 8px 10px; color: #675326; border: 1px solid rgba(103, 83, 38, 0.35); }
+.feed-panel { margin-top: 14px; }
+.signal-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin-top: 24px; border-top: 1px solid var(--line); }
+.signal-item { position: relative; min-width: 0; padding: 17px 0 16px; border-bottom: 1px solid var(--line); }
+.signal-meta, .signal-details { display: flex; align-items: center; gap: 10px; }
+.signal-meta, .signal-details, .signal-link { font: 10px var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
+.signal-category { color: var(--teal); }
+.signal-severity { padding: 3px 6px; border: 1px solid var(--line); color: var(--muted); }
+.severity-warn { color: #9a6c00; border-color: rgba(154, 108, 0, 0.35); }
+.severity-error, .severity-critical { color: var(--coral); border-color: rgba(239, 119, 95, 0.35); }
+.signal-title { margin: 12px 0 10px; font-size: 16px; line-height: 1.25; }
+.signal-details { justify-content: space-between; color: var(--muted); text-transform: none; }
+.signal-link { display: inline-block; margin-top: 12px; color: var(--teal-dark); text-decoration: none; }
+.signal-link:hover { color: var(--coral); }
 footer { display: flex; justify-content: space-between; padding: 31px 0 27px; color: var(--muted); font: 10px var(--mono); letter-spacing: 0.04em; }
 .blink { animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0; } }
@@ -86,6 +99,7 @@ footer { display: flex; justify-content: space-between; padding: 31px 0 27px; co
     .pulse-visual { display: none; }
     h1 { font-size: 54px; }
     .status-grid, .lower-grid { grid-template-columns: 1fr; }
+    .signal-list { grid-template-columns: 1fr; }
     .status-card { min-height: 145px; }
     footer { gap: 18px; flex-direction: column; }
 }
